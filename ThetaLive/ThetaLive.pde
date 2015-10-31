@@ -10,7 +10,9 @@ PVector[][] t_vertex2;
 
 void setup() {
   size(800, 600, P3D);
-  cam = new PCapture( 1, 1280, 720 );
+  
+  int cam_id = 2;
+  cam = new PCapture( cam_id, 1280, 720 );
   
   int k_div = 20;
   int s_div = 50;
@@ -38,9 +40,9 @@ void draw() {
   rotateY( radians( frameCount*5) );
 
   noStroke();
-  drawHalfSphere( vertex, t_vertex1, 20, 50, 500, 300, 310, 320 );
+  drawHalfSphere( vertex, t_vertex1, 20, 50, 300, 300, 310, 320 );
   rotateY(PI); 
-  drawHalfSphere( vertex, t_vertex2, 20, 50, 500, 300, 960, 320 );
+  drawHalfSphere( vertex, t_vertex2, 20, 50, 300, 300, 960, 320 );
 }
 
 
