@@ -1,115 +1,74 @@
-// CAUTION!
-// This is very dirty code. It needs refactoring.
 
-PCapture cam;
+//boolean isLive = true;
+boolean isLive = false;
+
+ThetaSphere tsphere;
 PImage img;
+PCapture cam;
+int camera_id = 0;
 
-PVector[][] vertex;
-PVector[][] t_vertex1;
-PVector[][] t_vertex2;
+int angleX = 0;
+int angleY = 0;
+
 
 void setup() {
   size(800, 600, P3D);
-  
-  int cam_id = 2;
-  cam = new PCapture( cam_id, 1280, 720 );
-  
-  int k_div = 20;
-  int s_div = 50;
-  int R = 300;
-  
-  vertex = new PVector[k_div+1][s_div];
-  t_vertex1 = new PVector[k_div+1][s_div];
-  t_vertex2 = new PVector[k_div+1][s_div];
-  
-  for (int k=1; k<=k_div; k++) {
-    for (int s=0; s<s_div; s++) {
-      vertex[k][s] = getPoint3D( k, s, R, k_div, s_div );
-      t_vertex1[k][s] = getPoint2D( k, s, R, 310, 320, k_div, s_div );
-      t_vertex2[k][s] = getPoint2D( k, s, R, 960, 320, k_div, s_div );
-    }
+
+  // live capture or image file
+  if ( isLive ) {
+    cam = new PCapture( camera_id, 1280, 720 );
+  } else {
+    img = loadImage("test.jpg");
   }
+
+  // sphere setup
+  int k_div = 40;      // division
+  int s_div = 40;      // division
+  int sphere_r = 600;  // sphere radius
+  int xc1 = 310, yc1 = 320;  // circle position in the image
+  int xc2 = 960, yc2 = 320;  // circle position in the image
+  int r = 283;               // circle radius
+
+  tsphere = new ThetaSphere(k_div, s_div, sphere_r, xc1, yc1, xc2, yc2, r);
 }
 
 
 void draw() {
   background(0);
-  img = cam.getImage();
-
-  translate( width/2, height/2, 600 );
-  rotateY( radians( frameCount*5) );
-
-  noStroke();
-  drawHalfSphere( vertex, t_vertex1, 20, 50, 300, 300, 310, 320 );
-  rotateY(PI); 
-  drawHalfSphere( vertex, t_vertex2, 20, 50, 300, 300, 960, 320 );
-}
-
-
-void drawHalfSphere(PVector[][] vertex, PVector[][] t_vertex, int k_div, int s_div, int R, int img_R, int xc, int yc) {
-
-  for (int k=1; k<=k_div; k++) {
-    for (int s=0; s<s_div; s++) {
-      int s2 = (s+1==s_div) ? 0 : s+1;  // next
-      if ( k==1 ) {
-        PVector p1 = vertex[k][s];
-        PVector p2 = vertex[k][s2];
-        PVector t1 = t_vertex[k][s];
-        PVector t2 = t_vertex[k][s2];
-        beginShape();
-        texture(img);        
-        vertex( p1.x, p1.y, p1.z, t1.x, t1.y );
-        vertex( p2.x, p2.y, p2.z, t2.x, t2.y );
-        vertex( 0, 0, R, xc, yc );
-        endShape(TRIANGLE);
-      } else {
-        PVector p1 = vertex[k][s];
-        PVector p2 = vertex[k-1][s];
-        PVector p3 = vertex[k][s2];
-        PVector p4 = vertex[k-1][s2];
-
-        PVector t1 = t_vertex[k][s];
-        PVector t2 = t_vertex[k-1][s];
-        PVector t3 = t_vertex[k][s2];
-        PVector t4 = t_vertex[k-1][s2];
-
-        beginShape();
-        texture(img);        
-        vertex( p1.x, p1.y, p1.z, t1.x, t1.y );
-        vertex( p3.x, p3.y, p3.z, t3.x, t3.y );
-        vertex( p2.x, p2.y, p2.z, t2.x, t2.y );
-        endShape(TRIANGLE);
-
-        beginShape();
-        texture(img);        
-        vertex( p2.x, p2.y, p2.z, t2.x, t2.y );
-        vertex( p3.x, p3.y, p3.z, t3.x, t3.y );
-        vertex( p4.x, p4.y, p4.z, t4.x, t4.y );
-        endShape(TRIANGLE);
-      }
-    }
+  
+  // capture live image
+  if ( isLive ) {
+    img = cam.getImage();
   }
+
+  // position of the sphere
+  translate( width/2, height/2, 600 );
+
+  // rotation by key input
+  rotateX( radians(angleY) );
+  rotateY( radians(angleX) );
+
+  // when THETA stands vertically
+  rotateZ(PI/2);
+
+  // draw sphere
+  noStroke();
+  tsphere.draw(img);
 }
 
 
-PVector getPoint3D(int k, int s, int R, int k_div, int s_div ) {  
-  float theta_k = (PI/2)/k_div * k;
-  float r = R*sin( theta_k );
-  float theta_s = (2*PI)/s_div * s;
-  float x = r*cos(theta_s);
-  float y = r*sin(theta_s);
-  float z = R * cos(theta_k);
-  PVector vec = new PVector(x, y, z);
-  return vec;
-}
-
-PVector getPoint2D(int k, int s, int R, int xc, int yc, int k_div, int s_div ) {
-  float theta_k = (PI/2)/k_div * k;
-  float r = R*sin( theta_k );
-  float theta_s = (2*PI)/s_div * s;
-  float x = r*cos(theta_s) + xc;
-  float y = r*sin(theta_s) + yc;
-  PVector vec = new PVector(x, y);
-  return vec;
+void keyPressed() {
+  if ( keyCode==LEFT ) {
+    angleX-=5;
+  }
+  if ( keyCode==RIGHT ) {
+    angleX+=5;
+  }
+  if ( keyCode==UP ) {
+    angleY+=5;
+  }
+  if ( keyCode==DOWN ) {
+    angleY-=5;
+  }
 }
 
