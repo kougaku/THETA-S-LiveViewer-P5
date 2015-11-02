@@ -31,20 +31,6 @@ class ThetaSphere {
 
     for (int k=1; k<=k_div; k++) {
       for (int s=0; s<s_div; s++) {
-        if ( k==1 ) {
-          PVector p0 = vertices[0][0];
-          PVector p1 = vertices[k][s];
-          PVector p2 = vertices[k][s+1];
-          PVector t0 = t_vertices[0][0];
-          PVector t1 = t_vertices[k][s];
-          PVector t2 = t_vertices[k][s+1];
-          beginShape(TRIANGLE);
-          texture(t_img);
-          vertex( p1.x, p1.y, p1.z, t1.x, t1.y );
-          vertex( p2.x, p2.y, p2.z, t2.x, t2.y );
-          vertex( p0.x, p0.y, p0.z, t0.x, t0.y );
-          endShape();
-        } else {
           PVector p1 = vertices[k][s];
           PVector p2 = vertices[k-1][s];
           PVector p3 = vertices[k][s+1];
@@ -61,7 +47,6 @@ class ThetaSphere {
           vertex( p3.x, p3.y, p3.z, t3.x, t3.y );
           vertex( p4.x, p4.y, p4.z, t4.x, t4.y );
           endShape();
-        }
       }
     }
   }

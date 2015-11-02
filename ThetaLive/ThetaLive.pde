@@ -22,7 +22,7 @@ void setup() {
   }
 
   // sphere setup
-  int k_div = 40;      // division
+  int k_div = 20;      // division
   int s_div = 40;      // division
   int sphere_r = 600;  // sphere radius
   int xc1 = 310, yc1 = 320;  // circle position in the image
