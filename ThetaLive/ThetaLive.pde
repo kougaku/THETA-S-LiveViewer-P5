@@ -41,8 +41,8 @@ void draw() {
     img = cam.getImage();
   }
 
-  // position of the sphere
-  translate( width/2, height/2, 600 );
+  // reset position
+  resetMatrix();
 
   // rotation by key input
   rotateX( radians(angleY) );
